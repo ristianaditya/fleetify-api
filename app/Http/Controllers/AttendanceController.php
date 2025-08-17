@@ -76,6 +76,21 @@ class AttendanceController extends Controller
         ], 200);
     }
 
+    public function today(Request $request){
+        $tz = config('app.timezone', 'Asia/Jakarta');
+        $today = Carbon::now($tz)->toDateString();
+
+        $attendances = Attendance::with('employee')
+            ->where('employee_id', $request->employee_id)
+            ->whereDate('date', $request->date ?? $today)
+            ->first();
+
+        return response()->json([
+            'date' => $today,
+            'attendances' => $attendances
+        ], 200);
+    }
+
     public function history($employeeId)
     {
         $attendances = Attendance::with('histories')
